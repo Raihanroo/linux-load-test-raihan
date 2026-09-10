@@ -20,10 +20,10 @@ A 256MB RAM-backed tmpfs was mounted at `/mnt/bgdsvc_raihan_tmp` and ownership a
 * **OOM check:** `dmesg | grep -i oom` was checked after every stress run — output was empty every time, confirming the kernel's OOM-killer was never triggered even under combined CPU+I/O+memory load.
 
 ## Part 4 — SSH Key-Based Access
-An `ed25519` key pair was generated and the public key installed into `bgdsvc_raihan`'s `authorized_keys` (`~/.ssh` set to `700`, `authorized_keys` set to `600`). Connecting as `bgdsvc_raihan` with the private key succeeded without a password prompt, and direct login without a key was refused.
+An `ed25519` key pair was generated (`~/.ssh/bgdsvc_raihan_key`) and the public key installed into `bgdsvc_raihan`'s `authorized_keys` (`.ssh` set to `700`, `authorized_keys` set to `600`). Connecting with `ssh -i ~/.ssh/bgdsvc_raihan_key -p 2222 bgdsvc_raihan@localhost` authenticated successfully via the key (confirmed by the "This account is currently not available" response from the nologin shell, rather than a permission/auth error).
 
 ## Part 5 — SSH Hardening
-`sshd_config` was updated to move SSH to port `2222`, disable `PermitRootLogin`, and disable `PasswordAuthentication`, restricting access to key-based login for `bgdsvc_raihan` only. The new configuration was verified by opening a **second** session on the new port and confirming login worked before closing the original session — avoiding a lockout if the config had a mistake.
+`/etc/ssh/sshd_config` was confirmed to have `Port 2222`, `PermitRootLogin no`, `PasswordAuthentication no`, and `AllowUsers bgdsvc_raihan`. Hardening was verified two ways: (1) attempting password-based login was rejected with "Permission denied" since password auth is disabled, and (2) attempting to connect as a different local user (`hp`) on port 2222 was also rejected, confirming `AllowUsers` correctly restricts access to only `bgdsvc_raihan`.
 
 ## Part 6 — Cron Monitoring & Cleanup
 `bgdsvc_raihan_monitor.sh` is scheduled every 5 minutes and appends memory, tmpfs usage, and process snapshots to `/var/log/bgdsvc_raihan/monitoring.log`. `bgdsvc_raihan_cleanup_old_files.sh` is scheduled nightly at 2 AM and removes tmpfs files older than 1 day, logging how many files were removed. `crontab -l -u bgdsvc_raihan` confirms both jobs are registered.
