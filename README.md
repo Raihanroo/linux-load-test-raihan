@@ -22,24 +22,30 @@ linux-load-test-raihan/
 │   ├── bgdsvc_raihan_monitor.sh
 │   └── bgdsvc_raihan_cleanup_old_files.sh
 └── screenshots/
-    ├── 00_svc_name.png            # echo $SVC_NAME
-    ├── 01_id_created.png          # id $SVC_NAME right after creation
-    ├── 02_df_before.png           # df -h before tmpfs mount
-    ├── 02_df_after.png            # df -h after tmpfs mount
-    ├── 03_free_before.png         # free -h before stress test
-    ├── 03_free_during.png         # free -h during stress test
-    ├── 03_free_after.png          # free -h after stress test
-    ├── 03_dmesg_oom.png           # dmesg | grep -i oom
-    ├── 04_ssh_success.png         # SSH connection succeeding on hardened port
-    ├── 05_crontab_l.png           # crontab -l -u $SVC_NAME
-    └── 06_cleanup_verify.png      # final verification block from 04_cleanup.sh
+    ├── 00_svc_name.png              # echo $SVC_NAME
+    ├── 01_id_created.png            # id $SVC_NAME right after creation
+    ├── 02_df_after.png              # df -h after tmpfs mount (0% used)
+    ├── 03_df_before.png             # df -h before disk-fill loop
+    ├── 03_df_after.png              # df -h after disk-fill loop (100% used)
+    ├── 03_cpu_stress.png            # stress --cpu 2 --timeout 30s
+    ├── 03_free_before.png           # free -h before memory stress
+    ├── 03_free_during.png           # free -h during memory stress
+    ├── 03_free_after.png            # free -h after memory stress
+    ├── 03_dmesg_oom.png             # dmesg | grep -i oom (empty)
+    ├── 03_combined_stress.png       # free -h during combined CPU+IO+VM stress
+    ├── 04_ssh_success.png           # SSH key-based login succeeding on port 2222
+    ├── 05_ssh_hardening_config.png  # sshd_config hardening settings confirmed
+    ├── 06_password_auth_blocked.png # password login correctly rejected
+    ├── 07_allowusers_blocked.png    # login as a different user correctly rejected
+    ├── 08_monitor_log.png           # monitoring.log written by the cron monitor script
+    ├── 09_crontab_l.png             # crontab -l -u $SVC_NAME showing both jobs
+    ├── 10_logrotate_test.png        # logrotate -f result (rotated + compressed log)
+    └── 06_cleanup_verify.png        # final verification block from 04_cleanup.sh
 ```
 
-> Note: rename your actual screenshot files to this exact list before committing —
-> the previous commit history had filenames (`04_stress_install.png`,
-> `06_ssh_config.png`, `09_logrotate_d.png`, `11_tmpfs_mount.png`, etc.) that no
-> longer match what this README describes. Keep the README and the real files in
-> the folder in sync going forward.
+> All 18 screenshots above were captured from an actual run on WSL (Ubuntu) and
+> committed under `screenshots/`. File names match exactly what's in the repo —
+> keep this list and the folder in sync if anything is re-run later.
 
 ---
 
